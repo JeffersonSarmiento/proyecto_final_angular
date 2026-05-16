@@ -13,6 +13,7 @@ import { CategoryApi, CategoryView } from '../models/category.model';
 import { ProductApi, ProductView } from '../models/product.model';
 import { StudentApi, StudentView } from '../models/student.model';
 import { CreateTaskPayload, TaskApi, TaskView } from '../models/task.model';
+import { CreateStudentPayload } from '../models/student.model';
 
 @Injectable({ providedIn: 'root' })
 export class AcademicApiService {
@@ -82,6 +83,7 @@ export class AcademicApiService {
        * Pista:
        * tap((response) => console.log('Respuesta cruda students:', response))
        */
+      tap((response) => console.log('Respuesta cruda students:', response)),
       map((response) => response.data.map(mapStudentApiToView)),
     );
   }
@@ -123,8 +125,12 @@ export class AcademicApiService {
      * Se usa void payload para que TypeScript no marque el parametro como no usado
      * mientras el metodo queda como ejercicio pendiente.
      */
-    void payload;
-    return throwError(() => new Error('TODO estudiante: implementar POST /api/tasks'));
+    return this.http
+      .post<ApiResponse<TaskApi>>(`${API_BASE_URL}/tasks`, payload)
+      .pipe(
+        tap((response) => console.log('Respuesta cruda createTask:', response)),
+        map((response) => mapTaskApiToView(response.data)),
+      );
   }
 
   /*
@@ -143,4 +149,35 @@ export class AcademicApiService {
    * - El payload debe usar los nombres que espera el backend: first_name,
    *   last_name, email y active.
    */
+  createStudent(payload: CreateStudentPayload): Observable<StudentView> {
+    return this.http
+      .post<ApiResponse<StudentApi>>(`${API_BASE_URL}/students`, payload)
+      .pipe(
+        tap((response) => console.log('Respuesta cruda createStudent:', response)),
+        map((response) => mapStudentApiToView(response.data)),
+      );
+  }
+
+  /*
+   * TODO estudiante:
+   * Crear metodo getTaskById(id).
+   *
+   * Nivel: reto.
+   *
+   * Pistas:
+   * - Usa GET /api/tasks/:id.
+   * - Aplica mapTaskApiToView al response.data.
+   *
+   * Criterio de aceptacion:
+   * - Debe retornar Observable<TaskView>.
+   * - Si el backend responde 404, la pantalla que lo use debe manejar el error.
+   */
+  getTaskById(id: number): Observable<TaskView> {
+    return this.http
+      .get<ApiResponse<TaskApi>>(`${API_BASE_URL}/tasks/${id}`)
+      .pipe(
+        tap((response) => console.log('Respuesta cruda getTaskById:', response)),
+        map((response) => mapTaskApiToView(response.data)),
+      );
+  }
 }

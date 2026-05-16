@@ -1,5 +1,6 @@
 import { JsonPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { TaskStatus } from '../../models/task.model';
 import {
   FormArray,
   FormControl,
@@ -8,6 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { TaskDraftStorageService } from '../../services/task-draft-storage.service';
+import { AcademicApiService } from '../../services/academic-api.service';
 
 interface TaskForm {
   title: FormControl<string>;
@@ -45,12 +47,13 @@ export class FormsPage {
    * - El payload debe respetar los nombres del backend: student_id y due_date.
    */
   private readonly draftStorage = inject(TaskDraftStorageService);
+  private readonly api = inject(AcademicApiService);
   private readonly draft = this.draftStorage.loadDraft();
 
   readonly taskForm = new FormGroup<TaskForm>({
     title: new FormControl(this.draft.title, {
       nonNullable: true,
-      validators: [Validators.required],
+      validators: [Validators.required, Validators.minLength(3)],
     }),
     description: new FormControl(this.draft.description, {
       nonNullable: true,
@@ -60,7 +63,10 @@ export class FormsPage {
       validators: [Validators.required],
     }),
     subtasks: new FormArray<FormControl<string>>([
-      new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     ]),
   });
 
@@ -70,7 +76,10 @@ export class FormsPage {
 
   addSubtask(): void {
     this.subtasks.push(
-      new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      new FormControl('', {
+        nonNullable: true,
+        validators: [Validators.required],
+      }),
     );
   }
 
@@ -104,6 +113,33 @@ export class FormsPage {
      * 4. Llamar al servicio.
      * 5. Manejar next y error en subscribe.
      */
-    console.log('Formulario valido:', this.taskForm.getRawValue());
+    const value = this.taskForm.getRawValue();
+
+const payload = {
+  title: value.title,
+  description: value.description || null,
+  priority: value.priority,
+  subtasks: value.subtasks,
+  student_id: 1,
+  due_date: null,
+  status: 'pending' as TaskStatus,
+};
+
+
+    this.api.createTask(payload).subscribe({
+      next: () => {
+        this.taskForm.reset({
+          title: '',
+          description: '',
+          priority: 'medium',
+        });
+        this.subtasks.clear();
+        this.addSubtask();
+        this.draftStorage.clearDraft();
+      },
+      error: () => {
+        console.error('Error al crear tarea');
+      },
+    });
   }
 }

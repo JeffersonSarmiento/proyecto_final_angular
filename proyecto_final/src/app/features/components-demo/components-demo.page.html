@@ -21,6 +21,7 @@
       <app-student-card
         [student]="student"
         (selected)="onStudentSelected($event)"
+        (removeRequested)="onStudentRemoveRequested($event)"
       />
     }
   </div>
@@ -35,3 +36,4 @@
     <p>Selecciona un estudiante para ver el detalle.</p>
   }
 </section>
+

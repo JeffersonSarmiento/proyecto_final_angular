@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { LocalStorageService } from '../../core/storage/local-storage.service';
 
 const STUDENT_NAME_KEY = 'academic-student-name';
+const TASK_FILTER_KEY = 'academic-task-filter';
 
 @Component({
   selector: 'app-local-storage-page',
@@ -46,6 +47,13 @@ export class LocalStoragePage {
     this.studentName.set('');
   }
 
+  readonly taskFilter = signal(
+    this.storage.getItem<{ status: string; priority: string }>(TASK_FILTER_KEY, {
+      status: '',
+      priority: '',
+    }),
+  );
+
   savePendingFilter(): void {
     /*
      * TODO estudiante:
@@ -57,5 +65,19 @@ export class LocalStoragePage {
      * 2. Usar this.storage.setItem(TASK_FILTER_KEY, filtro).
      * 3. Crear una signal para mostrar el filtro recuperado.
      */
+    this.storage.setItem(TASK_FILTER_KEY, this.taskFilter());
+  }
+
+  updateFilterStatus(value: string): void {
+    this.taskFilter.update((f) => ({ ...f, status: value }));
+  }
+
+  updateFilterPriority(value: string): void {
+    this.taskFilter.update((f) => ({ ...f, priority: value }));
+  }
+
+  clearFilter(): void {
+    this.storage.removeItem(TASK_FILTER_KEY);
+    this.taskFilter.set({ status: '', priority: '' });
   }
 }

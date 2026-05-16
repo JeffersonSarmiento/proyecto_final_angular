@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { TaskView } from '../../models/task.model';
 
 type DemoState = 'loading' | 'empty' | 'error' | 'ready';
@@ -55,7 +55,21 @@ export class ControlFlowPage {
     },
   ]);
 
+  readonly filter = signal<'all' | 'done' | 'pending'>('all');
+
+  readonly filteredTasks = computed(() => {
+    const f = this.filter();
+    const list = this.tasks();
+
+    if (f === 'all') return list;
+    return list.filter((t) => t.status === f);
+  });
+
   setState(state: DemoState): void {
     this.state.set(state);
+  }
+
+  setFilter(filter: 'all' | 'done' | 'pending'): void {
+    this.filter.set(filter);
   }
 }

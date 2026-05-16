@@ -57,7 +57,12 @@ export function mapProductApiToView(product: ProductApi): ProductView {
      *
      * Ahora se deja un texto temporal para que la pantalla compile.
      */
-    stockLabel: 'TODO: calcular stock',
+    stockLabel:
+      product.stock === 0
+        ? 'Sin stock'
+        : product.stock < 5
+        ? `${product.stock} unidades (Quedan pocas unidades)`
+        : `${product.stock} unidades`,
     /*
      * TODO estudiante:
      * Reemplaza este texto por product.category_name.
@@ -66,7 +71,7 @@ export function mapProductApiToView(product: ProductApi): ProductView {
      * Criterio de aceptacion:
      * - En la pagina Servicios HTTP ya no debe aparecer "TODO: mapear categoria".
      */
-    categoryName: 'TODO: mapear categoria',
+    categoryName: product.category_name,
   };
 }
 
@@ -105,7 +110,9 @@ export function mapTaskApiToView(task: TaskApi): TaskView {
      *
      * Ahora se deja parcialmente resuelto para que la app compile.
      */
-    dueDateLabel: task.due_date ? 'TODO: formatear fecha' : 'Sin fecha',
+    dueDateLabel: task.due_date
+      ? new Date(task.due_date).toLocaleDateString('es-EC')
+      : 'Sin fecha',
   };
 }
 

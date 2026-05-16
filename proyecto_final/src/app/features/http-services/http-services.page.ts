@@ -1,10 +1,12 @@
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of } from 'rxjs';
 import { AcademicApiService } from '../../services/academic-api.service';
 import { CategoryView } from '../../models/category.model';
 import { ProductView } from '../../models/product.model';
 import { TaskView } from '../../models/task.model';
+import { TaskStatus, TaskPriority } from '../../models/task.model';
+
 
 @Component({
   selector: 'app-http-services-page',
@@ -36,13 +38,38 @@ export class HttpServicesPage {
    */
   private readonly academicApi = inject(AcademicApiService);
 
-  readonly categories$: Observable<CategoryView[]> = this.academicApi.getCategories();
-  readonly products$: Observable<ProductView[]> = this.academicApi.getProducts();
-  readonly tasks$: Observable<TaskView[]> = this.academicApi.getTasks();
+  readonly categories$: Observable<CategoryView[]> = this.academicApi.getCategories().pipe(
+    catchError(() => of([])),
+  );
+
+  readonly products$: Observable<ProductView[]> = this.academicApi.getProducts().pipe(
+    catchError(() => of([])),
+  );
+
+  readonly tasks$: Observable<TaskView[]> = this.academicApi.getTasks().pipe(
+    catchError(() => of([])),
+  );
 
   readonly exampleJson = {
     endpoint: '/api/tasks',
     method: 'GET',
     topic: 'json',
   };
+
+createExampleTask(): void {
+const payload = {
+  title: 'Nueva tarea desde Angular',
+  description: null,
+  priority: 'high' as TaskPriority,
+  subtasks: [],
+  student_id: 1,
+  due_date: null,
+  status: 'pending' as TaskStatus,
+};
+
+
+  this.academicApi.createTask(payload).subscribe();
+}
+
+
 }

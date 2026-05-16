@@ -24,8 +24,14 @@ export class StudentCardComponent {
    */
   readonly student = input.required<StudentView>();
   readonly selected = output<StudentView>();
+  readonly removeRequested = output<StudentView>();
 
   selectStudent(): void {
     this.selected.emit(this.student());
   }
+
+  requestRemove(): void {
+    this.removeRequested.emit(this.student());
+  }
 }
+

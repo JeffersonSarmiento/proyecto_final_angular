@@ -49,4 +49,20 @@ export class ComponentsDemoPage {
   onStudentSelected(student: StudentView): void {
     this.selectedStudent = student;
   }
+
+  onStudentRemoveRequested(student: StudentView): void {
+    if (student.active) {
+      alert('No se puede eliminar un estudiante activo');
+      return;
+    }
+
+    const index = this.students.findIndex((s) => s.id === student.id);
+    if (index !== -1) {
+      this.students.splice(index, 1);
+    }
+
+    if (this.selectedStudent?.id === student.id) {
+      this.selectedStudent = null;
+    }
+  }
 }

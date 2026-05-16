@@ -36,4 +36,34 @@
   } @else {
     <p>No hay nombre guardado todavia.</p>
   }
+
+  <hr />
+
+  <label>
+    Estado
+    <select (change)="updateFilterStatus($any($event.target).value)">
+      <option value="">--</option>
+      <option value="pending">pending</option>
+      <option value="completed">completed</option>
+    </select>
+  </label>
+
+  <label>
+    Prioridad
+    <select (change)="updateFilterPriority($any($event.target).value)">
+      <option value="">--</option>
+      <option value="high">high</option>
+      <option value="medium">medium</option>
+      <option value="low">low</option>
+    </select>
+  </label>
+
+  <h2>Filtro guardado</h2>
+
+  @if (taskFilter().status || taskFilter().priority) {
+    <p><strong>Estado:</strong> {{ taskFilter().status }}</p>
+    <p><strong>Prioridad:</strong> {{ taskFilter().priority }}</p>
+  } @else {
+    <p>No hay filtro guardado.</p>
+  }
 </section>

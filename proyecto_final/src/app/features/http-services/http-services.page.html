@@ -24,6 +24,8 @@
     <pre>{{ exampleJson | json }}</pre>
   </article>
 
+  <button type="button" (click)="createExampleTask()">Crear tarea de ejemplo</button>
+
   <h2>Categories desde API</h2>
   @if (categories$ | async; as categories) {
     <ul>
@@ -32,7 +34,7 @@
       }
     </ul>
   } @else {
-    <p>Cargando categories...</p>
+    <p>Cargando o hubo un error al cargar categories.</p>
   }
 
   <h2>Products desde API</h2>
@@ -53,18 +55,24 @@
         </article>
       }
     </div>
+  } @else {
+    <p>Cargando o hubo un error al cargar products.</p>
   }
 
   <h2>Tasks desde API</h2>
   @if (tasks$ | async; as tasks) {
     <ul>
       @for (task of tasks; track task.id) {
-        <li>{{ task.title }} - {{ task.statusLabel }} - {{ task.studentLabel }}</li>
+        <li>
+          {{ task.title }} - {{ task.statusLabel }} - {{ task.studentLabel }} - {{ task.dueDateLabel }}
+        </li>
         <!--
           TODO estudiante:
           Agrega task.dueDateLabel cuando completes el mapper de fecha.
         -->
       }
     </ul>
+  } @else {
+    <p>Cargando o hubo un error al cargar tasks.</p>
   }
 </section>

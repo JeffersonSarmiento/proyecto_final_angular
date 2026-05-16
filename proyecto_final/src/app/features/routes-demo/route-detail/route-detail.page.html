@@ -12,6 +12,27 @@
 -->
 <article class="card">
   <h2>Detalle de ruta</h2>
+
   <p>Parametro recibido: {{ routeId() }}</p>
+
+  <ng-container *ngIf="idNumber() === null">
+    <p>ID inválido</p>
+  </ng-container>
+
+  <ng-container *ngIf="loading()">
+    <p>Cargando...</p>
+  </ng-container>
+
+  <ng-container *ngIf="error() && !loading()">
+    <p>{{ error() }}</p>
+  </ng-container>
+
+  <ng-container *ngIf="task() && !loading() && !error()">
+    <p><strong>Título:</strong> {{ task().title }}</p>
+    <p><strong>Estado:</strong> {{ task().statusLabel }}</p>
+    <p><strong>Prioridad:</strong> {{ task().priorityLabel }}</p>
+    <p><strong>Fecha límite:</strong> {{ task().dueDateLabel }}</p>
+  </ng-container>
+
   <a routerLink="/rutas">Volver</a>
 </article>
